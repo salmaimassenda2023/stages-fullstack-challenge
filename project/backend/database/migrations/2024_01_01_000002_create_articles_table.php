@@ -16,6 +16,7 @@ class CreateArticlesTable extends Migration
     {
         DB::statement('CREATE TABLE articles (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--          problem 1 : title doit ignoer les accents  => collation : latin1_unicode_ci
             title VARCHAR(255) COLLATE latin1_general_ci,
             content TEXT COLLATE latin1_general_ci,
             author_id BIGINT UNSIGNED NOT NULL,
