@@ -47,9 +47,11 @@ class CommentController extends Controller
         $articleId = $comment->article_id;
 
         $comment->delete();
-
+        //  Récupère les commentaires restants du même article
         $remainingComments = Comment::where('article_id', $articleId)->get();
-        $firstComment = $remainingComments[0];
+
+        // Sécurisé : retourne null s'il n'y a plus de commentaires
+            $firstComment = $remainingComments->first();
 
         return response()->json([
             'message' => 'Comment deleted successfully',
