@@ -39,6 +39,8 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
+
+    //
         $article = Article::with(['author', 'comments.user'])->findOrFail($id);
 
         return response()->json([
