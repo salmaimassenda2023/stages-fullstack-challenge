@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
@@ -13,11 +12,12 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $articles = Article::all();
+        // Chargement avec relations pour éviter N+1
+        $articles = Article::with(['author', 'comments'])->get();
 
         $articles = $articles->map(function ($article) use ($request) {
             if ($request->has('performance_test')) {
-                usleep(30000); // 30ms par article pour simuler le coût du N+1
+                usleep(30000); // simulation latence
             }
 
             return [
@@ -62,7 +62,7 @@ class ArticleController extends Controller
     }
 
     /**
-     * Search articles.
+     * 🔒 SECURE SEARCH (ELOQUENT)
      */
     public function search(Request $request)
     {
@@ -72,18 +72,17 @@ class ArticleController extends Controller
             return response()->json([]);
         }
 
-        $articles = DB::select(
-            "SELECT * FROM articles WHERE title LIKE '%" . $query . "%'"
-        );
+        // 🚀 Version 100% safe, Eloquent gère l’échappement
+        $articles = Article::where('title', 'LIKE', "%{$query}%")->get();
 
-        $results = array_map(function ($article) {
+        $results = $articles->map(function ($article) {
             return [
                 'id' => $article->id,
                 'title' => $article->title,
                 'content' => substr($article->content, 0, 200),
                 'published_at' => $article->published_at,
             ];
-        }, $articles);
+        });
 
         return response()->json($results);
     }
@@ -139,4 +138,3 @@ class ArticleController extends Controller
         return response()->json(['message' => 'Article deleted successfully']);
     }
 }
-
