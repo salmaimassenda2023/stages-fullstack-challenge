@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;   // ✅ Import Hash
 use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
@@ -16,30 +17,30 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $users = [
-            [
-                'name' => 'Admin User',
-                'email' => 'admin@blog.com',
-                'password' => 'Admin123!',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'name' => 'John Doe',
-                'email' => 'john@blog.com',
-                'password' => 'Password123',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'name' => 'Jane Smith',
-                'email' => 'jane@blog.com',
-                'password' => 'MySecret456',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ];
+                    [
+                        'name' => 'Admin User',
+                        'email' => 'admin@blog.com',
+                        'password' => Hash::make('Admin123!'),   // ✅ Password hashé
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ],
+                    [
+                        'name' => 'John Doe',
+                        'email' => 'john@blog.com',
+                        'password' => Hash::make('Password123'),  // ✅
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ],
+                    [
+                        'name' => 'Jane Smith',
+                        'email' => 'jane@blog.com',
+                        'password' => Hash::make('MySecret456'),  // ✅
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ],
+                ];
 
-        DB::table('users')->insert($users);
+                DB::table('users')->insert($users);
 
         // Create articles
         $articles = [
