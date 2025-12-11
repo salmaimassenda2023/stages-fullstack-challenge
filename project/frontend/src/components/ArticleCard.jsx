@@ -8,15 +8,16 @@ function ArticleCard({ article, onDelete }) {
     if (!dateString) return 'N/A';
     
     const date = new Date(dateString);
-    
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'America/Los_Angeles'
-    });
+
+      // ✅ Changement ici : 'en-US' → 'fr-FR' et 'America/Los_Angeles' → 'Europe/Paris'
+      return date.toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Europe/Paris'
+      });
   };
 
   return (
