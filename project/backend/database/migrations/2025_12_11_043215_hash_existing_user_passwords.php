@@ -1,28 +1,33 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-class HashExistingUserPasswords extends Migration
+return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        //
+        // Récupère tous les users
+        $users = DB::table('users')->get();
+
+        foreach ($users as $user) {
+            // Vérifie si le mot de passe n'est pas déjà hashé
+            // Les mots de passe hashés commencent par $2y$ (bcrypt)
+            if (!str_starts_with($user->password, '$2y$')) {
+                // Hash le mot de passe en clair
+                DB::table('users')
+                    ->where('id', $user->id)
+                    ->update([
+                        'password' => Hash::make($user->password)
+                    ]);
+            }
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        //
+        // Impossible de revenir en arrière (on ne peut pas "dé-hasher")
+        // On pourrait reset tous les mots de passe, mais ce n'est pas recommandé
     }
-}
+};
