@@ -4,20 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
     /**
      * Display a listing of articles.
+     * ⚡ FIXED: N+1 query problem (PERF-001)
      */
     public function index(Request $request)
     {
-        // Chargement avec relations pour éviter N+1
+        // ✅ Eager loading : charge articles + authors + comments en 3 requêtes
         $articles = Article::with(['author', 'comments'])->get();
 
         $articles = $articles->map(function ($article) use ($request) {
             if ($request->has('performance_test')) {
-                usleep(30000); // simulation latence
+                usleep(30000); // 30ms par article pour simuler latence DB distante
             }
 
             return [
@@ -36,11 +38,10 @@ class ArticleController extends Controller
 
     /**
      * Display the specified article.
+     * ✅ DÉJÀ OPTIMISÉ : utilise with()
      */
     public function show($id)
     {
-
-    //
         $article = Article::with(['author', 'comments.user'])->findOrFail($id);
 
         return response()->json([
@@ -64,7 +65,8 @@ class ArticleController extends Controller
     }
 
     /**
-     * 🔒 SECURE SEARCH (ELOQUENT)
+     * Search articles.
+     * 🔒 FIXED: SQL Injection (SEC-002)
      */
     public function search(Request $request)
     {
@@ -74,7 +76,7 @@ class ArticleController extends Controller
             return response()->json([]);
         }
 
-        // 🚀 Version 100% safe, Eloquent gère l’échappement
+        // Eloquent sécurisé contre l'injection SQL
         $articles = Article::where('title', 'LIKE', "%{$query}%")->get();
 
         $results = $articles->map(function ($article) {
