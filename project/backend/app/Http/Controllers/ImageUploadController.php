@@ -24,7 +24,7 @@ class ImageUploadController extends Controller
         $image = $request->file('image');
         $filename = Str::random(20) . '.' . $image->getClientOriginalExtension();
         $path = $image->storeAs('images', $filename, 'public');
-        
+
         return response()->json([
             'message' => 'Image uploaded successfully',
             'path' => $path,
